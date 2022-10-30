@@ -222,19 +222,20 @@ def analyze_table_IV_B(results_path=RESULTS_DIRECTORY):
     return _get_table_summary(result_files, results_path)
     
 def analyze_table_III(results_path=RESULTS_DIRECTORY):
-    aer_result_files = ['AER (MULT)', 'AER (SUM)', 'AER (PRED)', 'AER (REC)']
-    # todo: simply use 'AER (MULT)' for all 
-    # or A3,A4 use (PRED) and others use (MULT)
-    # currently pick the max
-    df1 = _get_table_summary(aer_result_files, results_path).max(axis=0)
+    aer_result_files = ['AER (MULT)', 'AER (PRED)']
+    # A3,A4 use (PRED) and others use (MULT)
+    df1 = _get_table_summary(aer_result_files, results_path)
+    df1.loc['AER (MULT)']['A3'] = df1.loc['AER (PRED)']['A3']
+    df1.loc['AER (MULT)']['A4'] = df1.loc['AER (PRED)']['A4']
+    # re-calculate mean/std
     columns = DATASET_RENAMES.values()
-    df1['AVG (F1)'] = df1[columns].mean()
-    df1['SD (F1)'] = df1[columns].std()
+    df1.loc['AER (MULT)']['AVG (F1)'] = df1.loc['AER (MULT)'][columns].mean()
+    df1.loc['AER (MULT)']['SD (F1)'] = df1.loc['AER (MULT)'][columns].std()
     
     other_result_files = ['ARIMA', 'LSTM-DT', 'LSTM-AE', 'LSTM-VAE', 'TadGAN']
     df2 = _get_table_summary(other_result_files, results_path)
     
-    df2.loc['AER'] = df1
+    df2.loc['AER'] = df1.loc['AER (MULT)']
     
     return df2
 

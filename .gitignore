@@ -4,6 +4,7 @@ logs/
 __pycache__/
 data/
 notebooks/*.txt
+notebooks/*Copy*.ipynb
 # Jupyter Notebook
 .ipynb_checkpoints
 *.egg-info/
