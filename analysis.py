@@ -25,8 +25,7 @@ NAB = ['artificialWithAnomaly', 'realAdExchange', 'realAWSCloudwatch', 'realTraf
 NASA = ['MSL', 'SMAP']
 YAHOO = ['YAHOOA1', 'YAHOOA2', 'YAHOOA3', 'YAHOOA4']
 UCR = ['UCR']
-# ALL_DATASETS = NAB + NASA + YAHOO + UCR
-ALL_DATASETS = ['realAdExchange']
+ALL_DATASETS = NAB + NASA + YAHOO + UCR
 
 FAMILY = {
     "MSL": "NASA",
