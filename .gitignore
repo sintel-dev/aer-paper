@@ -1,5 +1,6 @@
 *.py[cod]
 *$py.class
+logs/
 __pycache__/
 data/
 notebooks/*.txt
