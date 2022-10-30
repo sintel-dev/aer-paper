@@ -7,7 +7,7 @@ Replication files for AER.
 ## Usage
 
 Experiments were made in **python 3.7**.
-To reproduce the analysis made, create a virtual environment and install required packages, then run the script directly. All results will be saved to `./output` directory.
+To reproduce the analysis made, create a virtual environment and install required packages.
 
 ```bash
 conda create --name aer-env python=3.7
@@ -15,7 +15,11 @@ conda activate aer-env
 pip install -r requirements.txt
 ```
 
-TODO
+\[Optional\] If you want to run benchmark scripts, please download data folder.
+- download [data-aer-paper.zip](https://d3-ai-orion.s3.amazonaws.com/data-aer-paper.zip)
+- unzip it into `aer/data`
+
+To reproduce tables and figures, use `notebooks/analyze_results.ipynb`
 
 ## Resources
 
