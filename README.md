@@ -2,7 +2,7 @@
 
 Replication files for AER.
 
-> L. Wong, D. Liu, C. Sala, L. Berti-Equille, and K. Veeramachaneni. "Time Series Anomaly Detection using Prediction-Reconstruction Mixture Errors" IEEE BigData 2022. 
+> L. Wong, D. Liu, L. Berti-Equille, and K. Veeramachaneni. "Time Series Anomaly Detection using Prediction-Reconstruction Mixture Errors" IEEE BigData 2022. 
 
 ## Usage
 
@@ -13,12 +13,9 @@ To reproduce the analysis made, create a virtual environment and install require
 conda create --name aer-env python=3.7
 conda activate aer-env
 pip install -r requirements.txt
-python analysis.py
 ```
 
-## Figures
-
-To reproduce figures, refer to `notebooks/analysis.ipynb`.
+TODO
 
 ## Resources
 
