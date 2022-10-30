@@ -1,0 +1,165 @@
+{
+    "name": "aer.primitives.bi_reg.BiReg",
+    "contributors": [
+        "Lawrence Wong <lcwong@mit.edu>"
+    ],
+    "documentation": "",
+    "description": "Bidirectional Regression",
+    "classifiers": {
+        "type": "estimator",
+        "subtype": "regressor"
+    },
+    "modalities": [],
+    "primitive": "aer.primitives.bi_reg.BiReg",
+    "fit": {
+        "method": "fit",
+        "args": [
+            {
+                "name": "X",
+                "type": "ndarray"
+            },
+            {
+                "name": "y",
+                "type": "ndarray"
+            }
+        ]
+    },
+    "produce": {
+        "method": "predict",
+        "args": [
+            {
+                "name": "X",
+                "type": "ndarray"
+            }
+        ],
+        "output": [
+            {
+                "name": "forward_y_hat",
+                "type": "ndarray"
+            },
+            {
+                "name": "reverse_y_hat",
+                "type": "ndarray"
+            },
+            {
+                "name": "forward_fit_history",
+                "type": "ndarray"
+            },
+            {
+                "name": "reverse_fit_history",
+                "type": "ndarray"
+            }
+        ]
+    },
+    "hyperparameters": {
+        "fixed": {
+            "forward_optimizer": {
+                "type": "str",
+                "default": "tensorflow.keras.optimizers.Adam"
+            },
+            "reverse_optimizer": {
+                "type": "str",
+                "default": "tensorflow.keras.optimizers.Adam"
+            },
+            "input_shape": {
+                "type": "tuple",
+                "default": null
+            },
+            "learning_rate": {
+                "type": "float",
+                "default": 0.001
+            },
+            "epochs": {
+                "type": "int",
+                "default": 35
+            },
+            "batch_size": {
+                "type": "int",
+                "default": 64
+            },
+            "dropout_rate": {
+                "type": "float",
+                "default": 0.3
+            },
+            "lstm_units": {
+                "type": "int",
+                "default": 80
+            },
+            "callbacks": {
+                "type": "list",
+                "default": [
+                    {
+                        "class": "keras.callbacks.EarlyStopping",
+                        "args": {
+                            "monitor": "val_loss",
+                            "patience": 10,
+                            "min_delta": 0.0003
+                        }
+                    }
+                ]
+            },
+            "validation_split": {
+                "type": "float",
+                "default": 0.2
+            },
+            "shuffle": {
+                "type": "bool",
+                "default": true
+            },
+            "verbose": {
+                "type": "bool",
+                "default": true
+            },
+            "layers_forward_reg": {
+                "type": "list",
+                "default": [
+                    {
+                        "class": "tensorflow.keras.layers.LSTM",
+                        "parameters": {
+                            "units": "lstm_units",
+                            "return_sequences": false
+                        }
+                    },
+                    {
+                        "class": "tensorflow.keras.layers.Dropout",
+                        "parameters": {
+                            "rate": "dropout_rate"
+                        }
+                    },
+                    {
+                        "class": "tensorflow.keras.layers.Dense",
+                        "parameters": {
+                            "units": 1,
+                            "activation": "linear"
+                        }
+                    }
+                ]
+            },
+            "layers_reverse_reg": {
+                "type": "list",
+                "default": [
+                    {
+                        "class": "tensorflow.keras.layers.LSTM",
+                        "parameters": {
+                            "units": "lstm_units",
+                            "return_sequences": false
+                        }
+                    },
+                    {
+                        "class": "tensorflow.keras.layers.Dropout",
+                        "parameters": {
+                            "rate": "dropout_rate"
+                        }
+                    },
+                    {
+                        "class": "tensorflow.keras.layers.Dense",
+                        "parameters": {
+                            "units": 1,
+                            "activation": "linear"
+                        }
+                    }
+                ]
+            }
+        }
+    }
+}

@@ -5,8 +5,8 @@
         "sklearn.preprocessing.MinMaxScaler",
         "mlprimitives.custom.timeseries_preprocessing.rolling_window_sequences",
         "orion.primitives.timeseries_preprocessing.slice_array_by_dims",
-        "orion.primitives.bi_reg.BiReg",
-        "orion.primitives.bi_reg.score_anomalies",
+        "aer.primitives.bi_reg.BiReg",
+        "aer.primitives.bi_reg.score_anomalies",
         "orion.primitives.timeseries_anomalies.find_anomalies"
     ],
     "init_params": {
@@ -30,11 +30,11 @@
             "target_index": 0,
             "axis": 2
         },
-        "orion.primitives.bi_reg.BiReg#1": {
+        "aer.primitives.bi_reg.BiReg#1": {
             "epochs": 35,
             "verbose": false
         },
-        "orion.primitives.bi_reg.score_anomalies#1": {
+        "aer.primitives.bi_reg.score_anomalies#1": {
             "window_size": 250
         },
         "orion.primitives.timeseries_anomalies.find_anomalies#1": {
@@ -68,11 +68,11 @@
             },
             {
                 "name": "forward_y_hat",
-                "variable": "orion.primitives.bi_reg.BiReg#1.forward_y_hat"
+                "variable": "aer.primitives.bi_reg.BiReg#1.forward_y_hat"
             },
             {
                 "name": "reverse_y_hat",
-                "variable": "orion.primitives.bi_reg.BiReg#1.reverse_y_hat"
+                "variable": "aer.primitives.bi_reg.BiReg#1.reverse_y_hat"
             },
             {
                 "name": "index",
@@ -80,15 +80,15 @@
             },
             {
                 "name": "errors",
-                "variable": "orion.primitives.bi_reg.score_anomalies#1.errors"
+                "variable": "aer.primitives.bi_reg.score_anomalies#1.errors"
             },
             {
                 "name": "forward_fit_history",
-                "variable": "orion.primitives.bi_reg.BiReg#1.forward_fit_history"
+                "variable": "aer.primitives.bi_reg.BiReg#1.forward_fit_history"
             },
             {
                 "name": "reverse_fit_history",
-                "variable": "orion.primitives.bi_reg.BiReg#1.reverse_fit_history"
+                "variable": "aer.primitives.bi_reg.BiReg#1.reverse_fit_history"
             }
         ]
     }

@@ -1,0 +1,55 @@
+{
+    "name": "aer.primitives.bi_reg.score_anomalies",
+    "contributors": [
+        "Lawrence Wong <lcwong@mit.edu>"
+    ],
+    "description": "Compute an array of anomaly scores based on a combination of reconstruction error and critic output",
+    "classifiers": {
+        "type": "postprocessor",
+        "subtype": "feature_extractor"
+    },
+    "modalities": ["timeseries"],
+    "primitive": "aer.primitives.bi_reg.score_anomalies",
+    "produce": {
+        "args": [
+            {
+                "name": "y",
+                "type": "ndarray"
+            },
+            {
+                "name": "forward_y_hat",
+                "type": "ndarray"
+            },
+            {
+                "name": "reverse_y_hat",
+                "type": "ndarray"
+            },
+            {
+                "name": "index",
+                "type": "ndarray"
+            }
+        ],
+        "output": [
+            {
+                "name": "errors",
+                "type": "ndarray"
+            },
+            {
+                "name": "true_index",
+                "type": "ndarray"
+            }
+        ]
+    },
+    "hyperparameters": {
+        "tunable": {
+            "hide_start": {
+                "type": "int",
+                "default": null
+            },
+            "window_size": {
+                "type": "int",
+                "default": 100
+            }
+        }
+    }
+}
