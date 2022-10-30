@@ -261,7 +261,7 @@ def make_figure_6():
     # todo: lawrence
     # can you take the code here and write a version for our figure
     # https://github.com/sarahmish/sintel-paper/blob/master/analysis.py#L171
-
+    pass
 
 if __name__ == '__main__':
     print('running pipelines in Table IV-A')
