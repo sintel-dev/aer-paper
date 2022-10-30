@@ -213,8 +213,9 @@ def _get_table_summary(result_files, results_path):
         
 def analyze_table_IV_A(results_path=RESULTS_DIRECTORY):
     result_files = ['ARIMA', 'ARIMA (M)', 'LSTM-DT', 
-                    'LSTM-DT (M)', 'LSTM-AE', 'LSTM-AE (M)', 
-                    'LSTM-VAE', 'LSTM-VAE (M)', 'TadGAN', 'TadGAN (M)'] 
+                    'LSTM-DT (M)', 'LSTM-DT (M, Bi)',
+                    'LSTM-AE', 'LSTM-AE (M)', 'LSTM-VAE',
+                    'LSTM-VAE (M)', 'TadGAN', 'TadGAN (M)'] 
     return _get_table_summary(result_files, results_path)
 
 def analyze_table_IV_B(results_path=RESULTS_DIRECTORY):
