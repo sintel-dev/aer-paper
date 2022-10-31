@@ -15,8 +15,10 @@ from functools import partial
 from aer.benchmark import benchmark, BENCHMARK_DATA, METRICS
 from orion.evaluation import contextual_confusion_matrix
 from orion.evaluation.contextual import record_observed, record_expected
+from IPython.display import display
 import matplotlib.pyplot as plt
 import seaborn as sns
+
 sns.set_style("whitegrid")
 
 warnings.simplefilter('ignore')
@@ -46,18 +48,18 @@ FAMILY = {
 }
 
 DATASET_RENAMES = {
-    "MSL": "MSL", 
-    "SMAP": "SMAP", 
-    "YAHOOA1": "A1", 
-    "YAHOOA2": "A2", 
-    "YAHOOA3": "A3", 
+    "MSL": "MSL",
+    "SMAP": "SMAP",
+    "YAHOOA1": "A1",
+    "YAHOOA2": "A2",
+    "YAHOOA3": "A3",
     "YAHOOA4": "A4",
-    "artificialWithAnomaly": "Art", 
-    "realAWSCloudwatch": "AdEx", 
-    "realAdExchange": "AWS", 
-    "realTraffic": "Traffic", 
-    "realTweets": "Tweets", 
-    "UCR": "UCR" 
+    "artificialWithAnomaly": "Art",
+    "realAWSCloudwatch": "AdEx",
+    "realAdExchange": "AWS",
+    "realTraffic": "Traffic",
+    "realTweets": "Tweets",
+    "UCR": "UCR"
 }
 
 PIPELINE_TO_COLOR_MAP = {
@@ -70,13 +72,15 @@ PIPELINE_TO_COLOR_MAP = {
 PREDICTION_BASED_MODELS = ['ARIMA', 'LSTM-DT']
 RECONSTRUCTION_BASED_MODELS = ['LSTM-AE', 'LSTM-VAE']
 REC_ERROR_TYPES = ['point', 'area', 'dtw']
+MODELS = ['ARIMA', 'LSTM-DT', 'LSTM-AE', 'LSTM-VAE', 'TadGAN', 'AER']
 
 # Path to save experiment results and logs
 RESULTS_DIRECTORY = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'results')
 LOGS_DIRECTORY = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'logs')
 MODELS_DIRECTORY = os.path.join(RESULTS_DIRECTORY, 'models')
-os.makedirs(RESULTS_DIRECTORY, exist_ok = True)
-os.makedirs(LOGS_DIRECTORY, exist_ok = True)
+PAPER_RESULTS_DIRECTORY = os.path.join(RESULTS_DIRECTORY, 'paper-results')
+os.makedirs(RESULTS_DIRECTORY, exist_ok=True)
+os.makedirs(LOGS_DIRECTORY, exist_ok=True)
 
 # Additional Metrics
 del METRICS['accuracy']
@@ -90,8 +94,8 @@ METRICS = {k: partial(fun, weighted=False) for k, fun in METRICS.items()}
 # Running pipelines to generate results necessary for analysis
 # ------------------------------------------------------------------------------
 def _run_experiment(experiment_name: str, pipelines: dict, datasets: list, metrics: dict,
-                   results_directory: str = RESULTS_DIRECTORY, workers: int = 1,
-                   tqdm_log_file: str = 'output.txt'):
+                    results_directory: str = RESULTS_DIRECTORY, workers: int = 1,
+                    tqdm_log_file: str = 'output.txt'):
     datasets = {key: BENCHMARK_DATA[key] for key in datasets}
     scores = benchmark(
         pipelines=pipelines,
@@ -105,9 +109,10 @@ def _run_experiment(experiment_name: str, pipelines: dict, datasets: list, metri
         tqdm_log_file=tqdm_log_file
     )
     return scores
-        
+
+
 def run_table_IV_A_nomask():
-    experiment_name="Table_IV_A_no-mask"
+    experiment_name = "Table_IV_A_no-mask"
     pipelines = {
         'arima': 'arima_ablation',
         'lstm_dynamic_threshold': 'lstm_dynamic_threshold_ablation',
@@ -122,7 +127,7 @@ def run_table_IV_A_nomask():
         'vae': 'LSTM-VAE',
         'tadgan': 'TadGAN'
 
-    } 
+    }
     for key in pipelines:
         _results = _run_experiment(
             experiment_name=experiment_name,
@@ -131,17 +136,18 @@ def run_table_IV_A_nomask():
             metrics=METRICS,
             results_directory=RESULTS_DIRECTORY,
             workers=1,
-            tqdm_log_file = f'{LOGS_DIRECTORY}/{key_maps[key]}.txt'
+            tqdm_log_file=f'{LOGS_DIRECTORY}/{key_maps[key]}.txt'
         )
         _results['pipeline'] = key_maps[key]
         _results.to_csv(f'{RESULTS_DIRECTORY}/{key_maps[key]}_results.csv', index=False)
 
+
 def run_table_IV_A_mask():
-    experiment_name="Table_IV_A_mask"
+    experiment_name = "Table_IV_A_mask"
     pipelines = {
         'arima': 'arima_ablation-mask',
         'lstm_dynamic_threshold': 'lstm_dynamic_threshold_ablation-mask',
-        'bi_reg': 'bi_reg_ablation',   # this pipeline comes with mask naturally
+        'bi_reg': 'bi_reg_ablation',  # this pipeline comes with mask naturally
         'lstm_autoencoder': 'lstm_autoencoder_ablation-mask',
         'vae': 'vae_ablation-mask',
         'tadgan': 'tadgan_ablation-mask'
@@ -154,7 +160,7 @@ def run_table_IV_A_mask():
         'vae': 'LSTM-VAE (M)',
         'tadgan': 'TadGAN (M)'
 
-    } 
+    }
     for key in pipelines:
         _results = _run_experiment(
             experiment_name=experiment_name,
@@ -163,24 +169,26 @@ def run_table_IV_A_mask():
             metrics=METRICS,
             results_directory=RESULTS_DIRECTORY,
             workers=1,
-            tqdm_log_file = f'{LOGS_DIRECTORY}/{key_maps[key]}.txt'
+            tqdm_log_file=f'{LOGS_DIRECTORY}/{key_maps[key]}.txt'
         )
         _results['pipeline'] = key_maps[key]
         _results.to_csv(f'{RESULTS_DIRECTORY}/{key_maps[key]}_results.csv', index=False)
 
+
 def run_table_IV_A():
-    run_table_IV_A_nomask()    
+    run_table_IV_A_nomask()
     run_table_IV_A_mask()
-    
+
+
 def run_table_IV_B():
-    experiment_name="Table_IV_B"
+    experiment_name = "Table_IV_B"
     pipelines = ['aer_ablation-mult', 'aer_ablation-sum', 'aer_ablation-pred', 'aer_ablation-rec']
     key_maps = {
         'aer_ablation-mult': 'AER (MULT)',
         'aer_ablation-sum': 'AER (SUM)',
         'aer_ablation-pred': 'AER (PRED)',
         'aer_ablation-rec': 'AER (REC)'
-    } 
+    }
     for key in pipelines:
         _results = _run_experiment(
             experiment_name=experiment_name,
@@ -189,10 +197,11 @@ def run_table_IV_B():
             metrics=METRICS,
             results_directory=RESULTS_DIRECTORY,
             workers=1,
-            tqdm_log_file = f'{LOGS_DIRECTORY}/{key_maps[key]}.txt'
+            tqdm_log_file=f'{LOGS_DIRECTORY}/{key_maps[key]}.txt'
         )
         _results['pipeline'] = key_maps[key]
         _results.to_csv(f'{RESULTS_DIRECTORY}/{key_maps[key]}_results.csv', index=False)
+
 
 # ------------------------------------------------------------------------------
 # Analyzing results
@@ -206,10 +215,10 @@ def _get_table_summary(result_files, results_path):
             results = result
         else:
             results = pd.concat([results, result])
-    
-    order_pipelines = result_files 
+
+    order_pipelines = result_files
     order_datasets = DATASET_RENAMES.values()
-    
+
     df = results.copy(deep=True)
     df['group'] = df['dataset'].apply(FAMILY.get)
     df['dataset'] = df['dataset'].apply(DATASET_RENAMES.get)
@@ -225,18 +234,21 @@ def _get_table_summary(result_files, results_path):
     df['SD (F1)'] = df.std(axis=1)
 
     return df.T[order_pipelines].T
-        
+
+
 def analyze_table_IV_A(results_path=RESULTS_DIRECTORY):
-    result_files = ['ARIMA', 'ARIMA (M)', 'LSTM-DT', 
+    result_files = ['ARIMA', 'ARIMA (M)', 'LSTM-DT',
                     'LSTM-DT (M)', 'LSTM-DT (M, Bi)',
                     'LSTM-AE', 'LSTM-AE (M)', 'LSTM-VAE',
-                    'LSTM-VAE (M)', 'TadGAN', 'TadGAN (M)'] 
+                    'LSTM-VAE (M)', 'TadGAN', 'TadGAN (M)']
     return _get_table_summary(result_files, results_path)
+
 
 def analyze_table_IV_B(results_path=RESULTS_DIRECTORY):
     result_files = ['AER (PRED)', 'AER (SUM)', 'AER (REC)', 'AER (MULT)']
     return _get_table_summary(result_files, results_path)
-    
+
+
 def analyze_table_III(results_path=RESULTS_DIRECTORY):
     aer_result_files = ['AER (MULT)', 'AER (PRED)']
     # A3,A4 use (PRED) and others use (MULT)
@@ -247,13 +259,14 @@ def analyze_table_III(results_path=RESULTS_DIRECTORY):
     columns = DATASET_RENAMES.values()
     df1.loc['AER (MULT)']['AVG (F1)'] = df1.loc['AER (MULT)'][columns].mean()
     df1.loc['AER (MULT)']['SD (F1)'] = df1.loc['AER (MULT)'][columns].std()
-    
+
     other_result_files = ['ARIMA', 'LSTM-DT', 'LSTM-AE', 'LSTM-VAE', 'TadGAN']
     df2 = _get_table_summary(other_result_files, results_path)
-    
+
     df2.loc['AER'] = df1.loc['AER (MULT)']
-    
+
     return df2
+
 
 # ------------------------------------------------------------------------------
 # Plotting benchmark
@@ -267,13 +280,14 @@ def plot_anomaly_scores(dataset: str, signal_name: str) -> None:
     axs[0].plot(signal['timestamp'], signal['value'], color='#050505')
     expected = pd.read_csv(os.path.join(MODELS_DIRECTORY, signal_name, 'anomalies.csv'))
     for start, end in zip(expected['start'], expected['end']):
-        axs[0].axvspan(start-1, end+1, color='#FF0000', alpha=0.5)
+        axs[0].axvspan(start - 1, end + 1, color='#FF0000', alpha=0.5)
     axs[0].set_title(f"Anomalies for {signal_name} from {dataset}", fontsize=24)
 
     # Graph (b): Prediction-based Anomaly Scores
     for model_name in PREDICTION_BASED_MODELS:
         model_predictions = pd.read_csv(os.path.join(MODELS_DIRECTORY, signal_name, '{}.csv'.format(model_name)))
-        axs[1].plot(model_predictions['index'], model_predictions['errors'], color=PIPELINE_TO_COLOR_MAP[model_name], label=model_name)
+        axs[1].plot(model_predictions['index'], model_predictions['errors'], color=PIPELINE_TO_COLOR_MAP[model_name],
+                    label=model_name)
 
     axs[1].set_title("Prediction-based Anomaly Scores", fontsize=24)
     axs[1].legend(loc='upper right', ncol=len(PREDICTION_BASED_MODELS), prop={'size': 18})
@@ -282,11 +296,13 @@ def plot_anomaly_scores(dataset: str, signal_name: str) -> None:
     # Graph (c-e): Reconstruction-based Anomaly Scores
     for idx, rec_error_type in enumerate(REC_ERROR_TYPES):
         for model_name in RECONSTRUCTION_BASED_MODELS:
-            model_predictions = pd.read_csv(os.path.join(MODELS_DIRECTORY, signal_name, '{}_{}.csv'.format(model_name, rec_error_type.upper())))
-            axs[2+idx].plot(model_predictions['index'], model_predictions['errors'], color=PIPELINE_TO_COLOR_MAP[model_name], label=model_name)
+            model_predictions = pd.read_csv(
+                os.path.join(MODELS_DIRECTORY, signal_name, '{}_{}.csv'.format(model_name, rec_error_type.upper())))
+            axs[2 + idx].plot(model_predictions['index'], model_predictions['errors'],
+                              color=PIPELINE_TO_COLOR_MAP[model_name], label=model_name)
 
-        axs[2+idx].set_title(f"Reconstruction-based Anomaly Scores ({rec_error_type.upper()})", fontsize=24)
-        axs[2+idx].legend(loc='upper right', ncol=len(RECONSTRUCTION_BASED_MODELS), prop={'size': 18})
+        axs[2 + idx].set_title(f"Reconstruction-based Anomaly Scores ({rec_error_type.upper()})", fontsize=24)
+        axs[2 + idx].legend(loc='upper right', ncol=len(RECONSTRUCTION_BASED_MODELS), prop={'size': 18})
 
     plt.rcParams.update({'font.size': 18})
     plt.show()
@@ -297,16 +313,60 @@ def make_figure_3():
     signal_name = 'art_daily_flatmiddle'
     plot_anomaly_scores(dataset, signal_name)
 
+
 def make_figure_4():
     dataset = 'YAHOOA3'
     signal_name = 'A3Benchmark-TS11'
     plot_anomaly_scores(dataset, signal_name)
 
-def make_figure_6():
-    # todo: lawrence
-    # can you take the code here and write a version for our figure
-    # https://github.com/sarahmish/sintel-paper/blob/master/analysis.py#L171
-    pass
+
+def make_figure_6(show_numerical_results: bool = False):
+    # View Numerical Results
+    signals_to_size_map = {
+        '140-InternalBleeding4': 20,
+        '192-s20101mML2': 200,
+        '234-mit14157longtermecg': 2000
+    }
+    load_results = lambda model: pd.read_csv(os.path.join(PAPER_RESULTS_DIRECTORY, model + '_results.csv'))
+    runtime_results = dict()
+
+    for model in MODELS:
+        model_results = load_results(model + ' (MULT)' if model == 'AER' else model)
+        for signal in signals_to_size_map.keys():
+            runtime_results.setdefault(model, [])
+            elapsed = round(model_results[model_results.signal == signal]['elapsed'].iloc[0])
+            runtime_results[model].append(elapsed)
+
+    runtime_results = pd.DataFrame(runtime_results)
+    runtime_results.index = signals_to_size_map
+    runtime_results = runtime_results.T
+
+    if show_numerical_results:
+        display(runtime_results)
+
+    # Construct and plot graph
+    runtime_results_graph = []
+    for signal, size in signals_to_size_map.items():
+        for model_name in MODELS:
+            runtime_results_graph.append(
+                ['{}\n({})'.format(size, signal), runtime_results[signal].loc[model_name], model_name])
+
+    runtime_results_graph = pd.DataFrame(runtime_results_graph, columns=['Signal', 'Seconds', 'Model'])
+
+    _COLORS = ["#FAA31B", "#88C6ED", "#82C341", "#D54799", "#173F5F", "#ED553B"]
+    _PALETTE = sns.color_palette(_COLORS)
+
+    plt.figure(figsize=(10, 5))
+    ax = sns.barplot(data=runtime_results_graph, x='Signal', y='Seconds', hue='Model', palette=_PALETTE, saturation=0.7,
+                     linewidth=0.5, edgecolor='k')
+    ax.set(yscale='log')
+    plt.xlabel('Signal Size (kb) and Name', fontsize=14, labelpad=10, fontweight='bold')
+    plt.ylabel('Total Execution Time in Seconds (log)', fontsize=14, fontweight='bold')
+    ax.grid(True, linestyle='--')
+    ax.legend(loc='lower center', bbox_to_anchor=(0.5, 1), ncol=len(MODELS), fancybox=True, shadow=True)
+    plt.rcParams.update({'font.size': 11})
+    plt.show()
+
 
 if __name__ == '__main__':
     print('running pipelines in Table IV-A')
