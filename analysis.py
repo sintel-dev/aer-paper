@@ -79,8 +79,10 @@ RESULTS_DIRECTORY = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'r
 LOGS_DIRECTORY = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'logs')
 MODELS_DIRECTORY = os.path.join(RESULTS_DIRECTORY, 'models')
 PAPER_RESULTS_DIRECTORY = os.path.join(RESULTS_DIRECTORY, 'paper-results')
+FIGURES_DIRECTORY = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'figures')
 os.makedirs(RESULTS_DIRECTORY, exist_ok=True)
 os.makedirs(LOGS_DIRECTORY, exist_ok=True)
+os.makedirs(FIGURES_DIRECTORY, exist_ok = True)
 
 # Additional Metrics
 del METRICS['accuracy']
@@ -267,12 +269,28 @@ def analyze_table_III(results_path=RESULTS_DIRECTORY):
 
     return df2
 
+# ------------------------------------------------------------------------------
+# Saving results
+# ------------------------------------------------------------------------------
+
+def _savefig(fig, name, figdir=FIGURES_DIRECTORY):
+    # for ext in ['.png', '.pdf', '.eps', '.svg']:
+    for ext in ['.png']:
+        fig.savefig(f'{figdir}/{name}{ext}',
+                    bbox_inches='tight')
 
 # ------------------------------------------------------------------------------
 # Plotting benchmark
 # ------------------------------------------------------------------------------
 
 def plot_anomaly_scores(dataset: str, signal_name: str) -> None:
+    
+    # plt.rcParams.update({
+    #     'font.size': 18,
+    #     'lines.linewidth': 2
+    # })
+    sns.set_context("paper")
+    sns.set(font_scale=1.6)
     fig, axs = plt.subplots(5, 1, figsize=(20, 25), sharex=True)
 
     # Graph (a): Signal and Anomalies
@@ -306,19 +324,19 @@ def plot_anomaly_scores(dataset: str, signal_name: str) -> None:
 
     plt.rcParams.update({'font.size': 18})
     plt.show()
-
+    return fig
 
 def make_figure_3():
     dataset = 'artificialWithAnomaly'
     signal_name = 'art_daily_flatmiddle'
-    plot_anomaly_scores(dataset, signal_name)
-
+    fig = plot_anomaly_scores(dataset, signal_name)
+    _savefig(fig, 'figure3')
 
 def make_figure_4():
     dataset = 'YAHOOA3'
     signal_name = 'A3Benchmark-TS11'
-    plot_anomaly_scores(dataset, signal_name)
-
+    fig = plot_anomaly_scores(dataset, signal_name)
+    _savefig(fig, 'figure4')
 
 def make_figure_6(show_numerical_results: bool = False):
     # View Numerical Results
@@ -356,7 +374,10 @@ def make_figure_6(show_numerical_results: bool = False):
     _COLORS = ["#FAA31B", "#88C6ED", "#82C341", "#D54799", "#173F5F", "#ED553B"]
     _PALETTE = sns.color_palette(_COLORS)
 
-    plt.figure(figsize=(10, 5))
+    sns.set_context("paper")
+    sns.set(font_scale=1.2)
+    # plt.rcParams.update({'font.size': 11})
+    fig = plt.figure(figsize=(11, 5))
     ax = sns.barplot(data=runtime_results_graph, x='Signal', y='Seconds', hue='Model', palette=_PALETTE, saturation=0.7,
                      linewidth=0.5, edgecolor='k')
     ax.set(yscale='log')
@@ -364,8 +385,8 @@ def make_figure_6(show_numerical_results: bool = False):
     plt.ylabel('Total Execution Time in Seconds (log)', fontsize=14, fontweight='bold')
     ax.grid(True, linestyle='--')
     ax.legend(loc='lower center', bbox_to_anchor=(0.5, 1), ncol=len(MODELS), fancybox=True, shadow=True)
-    plt.rcParams.update({'font.size': 11})
     plt.show()
+    _savefig(fig, 'figure6')
 
 
 if __name__ == '__main__':
