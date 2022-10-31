@@ -15,6 +15,9 @@ from functools import partial
 from aer.benchmark import benchmark, BENCHMARK_DATA, METRICS
 from orion.evaluation import contextual_confusion_matrix
 from orion.evaluation.contextual import record_observed, record_expected
+import matplotlib.pyplot as plt
+import seaborn as sns
+sns.set_style("whitegrid")
 
 warnings.simplefilter('ignore')
 
@@ -57,9 +60,21 @@ DATASET_RENAMES = {
     "UCR": "UCR" 
 }
 
+PIPELINE_TO_COLOR_MAP = {
+    'ARIMA': '#FAA31B',
+    'LSTM-DT': '#88C6ED',
+    'LSTM-AE': '#82C341',
+    'LSTM-VAE': '#D54799',
+}
+
+PREDICTION_BASED_MODELS = ['ARIMA', 'LSTM-DT']
+RECONSTRUCTION_BASED_MODELS = ['LSTM-AE', 'LSTM-VAE']
+REC_ERROR_TYPES = ['point', 'area', 'dtw']
+
 # Path to save experiment results and logs
 RESULTS_DIRECTORY = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'results')
 LOGS_DIRECTORY = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'logs')
+MODELS_DIRECTORY = os.path.join(RESULTS_DIRECTORY, 'models')
 os.makedirs(RESULTS_DIRECTORY, exist_ok = True)
 os.makedirs(LOGS_DIRECTORY, exist_ok = True)
 
@@ -243,21 +258,49 @@ def analyze_table_III(results_path=RESULTS_DIRECTORY):
 # ------------------------------------------------------------------------------
 # Plotting benchmark
 # ------------------------------------------------------------------------------
+
+def plot_anomaly_scores(dataset: str, signal_name: str) -> None:
+    fig, axs = plt.subplots(5, 1, figsize=(20, 25), sharex=True)
+
+    # Graph (a): Signal and Anomalies
+    signal = pd.read_csv(os.path.join(MODELS_DIRECTORY, signal_name, 'signal.csv'))
+    axs[0].plot(signal['timestamp'], signal['value'], color='#050505')
+    expected = pd.read_csv(os.path.join(MODELS_DIRECTORY, signal_name, 'anomalies.csv'))
+    for start, end in zip(expected['start'], expected['end']):
+        axs[0].axvspan(start-1, end+1, color='#FF0000', alpha=0.5)
+    axs[0].set_title(f"Anomalies for {signal_name} from {dataset}", fontsize=24)
+
+    # Graph (b): Prediction-based Anomaly Scores
+    for model_name in PREDICTION_BASED_MODELS:
+        model_predictions = pd.read_csv(os.path.join(MODELS_DIRECTORY, signal_name, '{}.csv'.format(model_name)))
+        axs[1].plot(model_predictions['index'], model_predictions['errors'], color=PIPELINE_TO_COLOR_MAP[model_name], label=model_name)
+
+    axs[1].set_title("Prediction-based Anomaly Scores", fontsize=24)
+    axs[1].legend(loc='upper right', ncol=len(PREDICTION_BASED_MODELS), prop={'size': 18})
+    axs[1].axes.xaxis.set_ticklabels([])
+
+    # Graph (c-e): Reconstruction-based Anomaly Scores
+    for idx, rec_error_type in enumerate(REC_ERROR_TYPES):
+        for model_name in RECONSTRUCTION_BASED_MODELS:
+            model_predictions = pd.read_csv(os.path.join(MODELS_DIRECTORY, signal_name, '{}_{}.csv'.format(model_name, rec_error_type.upper())))
+            axs[2+idx].plot(model_predictions['index'], model_predictions['errors'], color=PIPELINE_TO_COLOR_MAP[model_name], label=model_name)
+
+        axs[2+idx].set_title(f"Reconstruction-based Anomaly Scores ({rec_error_type.upper()})", fontsize=24)
+        axs[2+idx].legend(loc='upper right', ncol=len(RECONSTRUCTION_BASED_MODELS), prop={'size': 18})
+
+    plt.rcParams.update({'font.size': 18})
+    plt.show()
+
+
 def make_figure_3():
-    # todo: lawrence
-    # 1. save the necesary .pkl (model) file to results/models
-    # 2. rename them LSTM-DT, LSTM-VAE, etc.
-    # 3. write codes to plot the figure
-    # 4. use seaborn to improve
-    pass
+    dataset = 'artificialWithAnomaly'
+    signal_name = 'art_daily_flatmiddle'
+    plot_anomaly_scores(dataset, signal_name)
 
 def make_figure_4():
-    # todo: lawrence
-    # 1. save the necesary .pkl (model) file to results/models
-    # 2. rename them LSTM-DT, LSTM-VAE, etc.
-    # 3. write codes to plot the figure
-    # 4. use seaborn to improve
-    pass
+    dataset = 'YAHOOA3'
+    signal_name = 'A3Benchmark-TS11'
+    plot_anomaly_scores(dataset, signal_name)
 
 def make_figure_6():
     # todo: lawrence
