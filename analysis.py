@@ -63,10 +63,10 @@ DATASET_RENAMES = {
 }
 
 PIPELINE_TO_COLOR_MAP = {
-    'ARIMA': '#FAA31B',
-    'LSTM-DT': '#88C6ED',
-    'LSTM-AE': '#82C341',
-    'LSTM-VAE': '#D54799',
+    'ARIMA': '#d37d0b',
+    'LSTM-DT': '#83d6ff',
+    'LSTM-AE': '#64aa13',
+    'LSTM-VAE': '#9612b2',
 }
 
 PREDICTION_BASED_MODELS = ['ARIMA', 'LSTM-DT']
@@ -106,6 +106,8 @@ def _run_experiment(experiment_name: str, pipelines: dict, datasets: list, metri
         rank='f1',
         show_progress=True,
         workers=workers,
+        # the following two parameters are used for saving the 
+        # intermediate prediction results and trained models
         # cache_dir=os.path.join(results_directory, experiment_name, 'cache'),
         # pipeline_dir=os.path.join(results_directory, experiment_name, 'pipeline'),
         tqdm_log_file=tqdm_log_file
@@ -295,7 +297,7 @@ def plot_anomaly_scores(dataset: str, signal_name: str) -> None:
 
     # Graph (a): Signal and Anomalies
     signal = pd.read_csv(os.path.join(MODELS_DIRECTORY, signal_name, 'signal.csv'))
-    axs[0].plot(signal['timestamp'], signal['value'], color='#050505')
+    axs[0].plot(signal['timestamp'], signal['value'], color='#5d7793')
     expected = pd.read_csv(os.path.join(MODELS_DIRECTORY, signal_name, 'anomalies.csv'))
     for start, end in zip(expected['start'], expected['end']):
         axs[0].axvspan(start - 1, end + 1, color='#FF0000', alpha=0.5)
@@ -371,7 +373,8 @@ def make_figure_6(show_numerical_results: bool = False):
 
     runtime_results_graph = pd.DataFrame(runtime_results_graph, columns=['Signal', 'Seconds', 'Model'])
 
-    _COLORS = ["#FAA31B", "#88C6ED", "#82C341", "#D54799", "#173F5F", "#ED553B"]
+    # ARIMA, LSTM-DT, LSTM-AE, LSTM-VAE, TadGAN, AER
+    _COLORS = ["#d37d0b", "#83d6ff", "#64aa13", "#9612b2", "#273643", "#f1b145"]
     _PALETTE = sns.color_palette(_COLORS)
 
     sns.set_context("paper")

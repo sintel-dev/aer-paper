@@ -3,6 +3,7 @@
 logs/
 __pycache__/
 data/
+temp/
 notebooks/*.txt
 notebooks/*Copy*.ipynb
 # Jupyter Notebook
