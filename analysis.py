@@ -19,8 +19,6 @@ from IPython.display import display
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-sns.set_style("whitegrid")
-
 warnings.simplefilter('ignore')
 
 LOGGER = logging.getLogger(__name__)
@@ -31,6 +29,7 @@ NASA = ['MSL', 'SMAP']
 YAHOO = ['YAHOOA1', 'YAHOOA2', 'YAHOOA3', 'YAHOOA4']
 UCR = ['UCR']
 ALL_DATASETS = NAB + NASA + YAHOO + UCR
+ALL_DATASETS_EXCLUDING_YAHOO = NAB + NASA + UCR # by default running
 
 FAMILY = {
     "MSL": "NASA",
@@ -136,7 +135,7 @@ def run_table_IV_A_nomask():
         _results = _run_experiment(
             experiment_name=experiment_name,
             pipelines={key: pipelines[key]},
-            datasets=ALL_DATASETS,
+            datasets=ALL_DATASETS_EXCLUDING_YAHOO,
             metrics=METRICS,
             results_directory=RESULTS_DIRECTORY,
             workers=1,
@@ -169,7 +168,7 @@ def run_table_IV_A_mask():
         _results = _run_experiment(
             experiment_name=experiment_name,
             pipelines={key: pipelines[key]},
-            datasets=ALL_DATASETS,
+            datasets=ALL_DATASETS_EXCLUDING_YAHOO,
             metrics=METRICS,
             results_directory=RESULTS_DIRECTORY,
             workers=1,
@@ -197,7 +196,7 @@ def run_table_IV_B():
         _results = _run_experiment(
             experiment_name=experiment_name,
             pipelines={'aer': key},
-            datasets=ALL_DATASETS,
+            datasets=ALL_DATASETS_EXCLUDING_YAHOO,
             metrics=METRICS,
             results_directory=RESULTS_DIRECTORY,
             workers=1,
@@ -287,12 +286,7 @@ def _savefig(fig, name, figdir=FIGURES_DIRECTORY):
 
 def plot_anomaly_scores(dataset: str, signal_name: str) -> None:
     
-    # plt.rcParams.update({
-    #     'font.size': 18,
-    #     'lines.linewidth': 2
-    # })
-    sns.set_context("paper")
-    sns.set(font_scale=1.6)
+    sns.set_theme(context='paper', style='whitegrid', font_scale=1.6)
     fig, axs = plt.subplots(5, 1, figsize=(20, 25), sharex=True)
 
     # Graph (a): Signal and Anomalies
@@ -377,9 +371,7 @@ def make_figure_6(show_numerical_results: bool = False):
     _COLORS = ["#d37d0b", "#83d6ff", "#64aa13", "#9612b2", "#273643", "#f1b145"]
     _PALETTE = sns.color_palette(_COLORS)
 
-    sns.set_context("paper")
-    sns.set(font_scale=1.2)
-    # plt.rcParams.update({'font.size': 11})
+    sns.set_theme(context='paper', style='whitegrid', font_scale=1.4)
     fig = plt.figure(figsize=(11, 5))
     ax = sns.barplot(data=runtime_results_graph, x='Signal', y='Seconds', hue='Model', palette=_PALETTE, saturation=0.7,
                      linewidth=0.5, edgecolor='k')
