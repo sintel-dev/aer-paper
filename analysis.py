@@ -234,7 +234,7 @@ def _get_table_summary(result_files, results_path):
     df = df.set_index(['dataset', 'pipeline'])['f1'].unstack(0)
     df = df[order_datasets]
     df['AVG (F1)'] = df.mean(axis=1)
-    df['SD (F1)'] = df.std(axis=1)
+    df['SD (F1)'] = df.std(axis=1).map(lambda x: f'{x:.2f}')
 
     return df.T[order_pipelines].T
 
@@ -261,7 +261,7 @@ def analyze_table_III(results_path=RESULTS_DIRECTORY):
     # re-calculate mean/std
     columns = DATASET_RENAMES.values()
     df1.loc['AER (MULT)']['AVG (F1)'] = df1.loc['AER (MULT)'][columns].mean()
-    df1.loc['AER (MULT)']['SD (F1)'] = df1.loc['AER (MULT)'][columns].std()
+    df1.loc['AER (MULT)']['SD (F1)'] = f"{df1.loc['AER (MULT)'][columns].std():.2f}"
 
     other_result_files = ['ARIMA', 'LSTM-DT', 'LSTM-AE', 'LSTM-VAE', 'TadGAN']
     df2 = _get_table_summary(other_result_files, results_path)
