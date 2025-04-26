@@ -18,7 +18,7 @@ pip install -r requirements.txt
 To reproduce tables and figures, use `notebooks/analyze_results.ipynb`
 
 \[Optional\] If you want to run benchmark scripts, please download data folder.
-- download [data-aer-paper.zip](https://d3-ai-orion.s3.amazonaws.com/data-aer-paper.zip)
+- download [data-aer-paper.zip](https://sintel-orion.s3.amazonaws.com/data-aer-paper.zip)
 - unzip it into `aer/data`
 
 Note: [Yahoo datasets](https://webscope.sandbox.yahoo.com/catalog.php?datatype=s&did=70&guccounter=1) are excluded, to include which you may need to apply for the access on the official website and then add those signals to data folder.
